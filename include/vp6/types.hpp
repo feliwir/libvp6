@@ -18,28 +18,6 @@ namespace vp6
 
 	struct Tree
 	{
-		constexpr Tree(int8_t value, int8_t probIdx) : Value(value), ProbIdx(probIdx)
-		{
-		}
-
-		//Tree(int8_t value, int8_t probIdx) : Value(value), ProbIdx(probIdx)
-		//{
-		//	Value = value;
-		//	ProbIdx = probIdx;
-		//}
-
-		constexpr Tree(int8_t value) : Tree(value, 0)
-		{
-		}
-
-		Tree(int8_t value) : Tree(value, 0)
-		{
-		}
-
-		constexpr Tree(CodingMode value, bool neg) : Tree((neg ? -(int8_t)value : (int8_t)value), 0)
-		{
-		}
-
 		int8_t Value;
 		int8_t ProbIdx;
 	};

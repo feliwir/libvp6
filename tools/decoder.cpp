@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
-#include <vp6/decode.h>
-#include "demuxer.h"
+#include <vp6/decode.hpp>
+#include "demuxer.hpp"
 
 void load(const std::string& file)
 {

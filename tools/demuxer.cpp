@@ -1,4 +1,4 @@
-#include "demuxer.h"
+#include "demuxer.hpp"
 
 vp6::Demuxer::Demuxer(std::istream&& stream) : m_reader(stream)
 {

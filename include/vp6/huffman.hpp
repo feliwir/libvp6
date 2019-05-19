@@ -16,7 +16,7 @@ namespace vp6
 	class Huffman
 	{
 	public:
-		Huffman(uint8_t* model, uint8_t* map, int size)
+		Huffman(const uint8_t* model, const uint8_t* map, int size)
 		{
 			int a, b;
 			m_bits = log2(size) + 1;

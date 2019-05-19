@@ -1,15 +1,15 @@
 set(HDR_FILES
-    ${VP6_INC_DIR}/vp6/context.h
-    ${VP6_INC_DIR}/vp6/decode.h
-    ${VP6_INC_DIR}/vp6/frame.h
-    ${VP6_INC_DIR}/vp6/huffman.h
-    ${VP6_INC_DIR}/vp6/idct.h
-    ${VP6_INC_DIR}/vp6/model.h
-    ${VP6_INC_DIR}/vp6/rangedecoder.h
-    ${VP6_INC_DIR}/vp6/types.h
-    dequantize.h
-    tables.h
-    util.h
+    ${VP6_INC_DIR}/vp6/context.hpp
+    ${VP6_INC_DIR}/vp6/decode.hpp
+    ${VP6_INC_DIR}/vp6/frame.hpp
+    ${VP6_INC_DIR}/vp6/huffman.hpp
+    ${VP6_INC_DIR}/vp6/idct.hpp
+    ${VP6_INC_DIR}/vp6/model.hpp
+    ${VP6_INC_DIR}/vp6/rangedecoder.hpp
+    ${VP6_INC_DIR}/vp6/types.hpp
+    dequantize.hpp
+    tables.hpp
+    util.hpp
     )
 
 set(SRC_FILES

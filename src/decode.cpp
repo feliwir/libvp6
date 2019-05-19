@@ -1,5 +1,5 @@
-#include <vp6/decode.h>
-#include "tables.h"
+#include <vp6/decode.hpp>
+#include "tables.hpp"
 
 vp6::DecodingContext::DecodingContext(uint16_t width, uint16_t height,
 	uint32_t denominator, uint32_t numerator,
@@ -13,15 +13,15 @@ vp6::DecodingContext::DecodingContext(uint16_t width, uint16_t height,
 
 	if (flip)
 	{
-		m_flip = -1;
-		m_frbi = 2;
-		m_srbi = 0;
+		Flip = -1;
+		Frbi = 2;
+		Srbi = 0;
 	}
 	else
 	{
-		m_flip = 1;
-		m_frbi = 0;
-		m_srbi = 2;
+		Flip = 1;
+		Frbi = 0;
+		Srbi = 2;
 	}
 }
 
@@ -36,9 +36,9 @@ vp6::DecodingContext::~DecodingContext()
 
 void vp6::DecodingContext::ProcessPacket(uint8_t * data, int packet_size)
 {
-	m_frames[(int)FrameSelect::PREVIOUS] = m_frames[(int)FrameSelect::CURRENT];
+	Frames[(int)FrameSelect::PREVIOUS] = Frames[(int)FrameSelect::CURRENT];
 
-	auto frame = m_frames[(int)FrameSelect::CURRENT] = std::make_shared<Frame>(data, packet_size - 8, this);
+	auto frame = Frames[(int)FrameSelect::CURRENT] = std::make_shared<Frame>(data, packet_size - 8, this);
 	frame->Decode();
 }
 
@@ -57,9 +57,9 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 		if (b > 3)
 			pt = 1;
 
-		ctx = m_leftBlocks[Tables::B6To4[b]].NotNullDc + AboveBlocks[m_aboveBlocksIdx[b]].NotNullDc;
-		model1 = m_model.CoeffDccv[pt];
-		model2 = m_model.CoeffDcct[pt][ctx];
+		ctx = LeftBlocks[Tables::B6To4[b]].NotNullDc + AboveBlocks[AboveBlocksIdx[b]].NotNullDc;
+		model1 = Model.CoeffDccv[pt];
+		model2 = Model.CoeffDcct[pt][ctx];
 
 		coeff_index = 0;
 		for (;;)
@@ -71,7 +71,7 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 				{
 					if (CoeffDec->GetBitProbabilityBranch(model2[3]) > 0)
 					{
-						idx = CoeffDec->GetTree(Tables::PcTree, model1);
+						idx = CoeffDec->GetTree(&Tables::PcTree[0], model1);
 						coeff = Tables::CoeffBias[idx + 5];
 						for (int i = Tables::CoeffBitLength[idx]; i >= 0; --i)
 							coeff += CoeffDec->GetBitProbability(Tables::CoeffParseTable[idx][i]) << i;
@@ -97,8 +97,8 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 				if (coeff_index > 0)
 					coeff *= dequantAc;
 
-				idx = m_model.CoeffIndexToPos[coeff_index];
-				m_blockCoeff[b][Tables::Scantable[idx]] = (short)coeff;
+				idx = Model.CoeffIndexToPos[coeff_index];
+				BlockCoeff[b][Tables::Scantable[idx]] = (short)coeff;
 				run = 1;
 			}
 			//Parse a run
@@ -110,7 +110,7 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 					if (CoeffDec->GetBitProbabilityBranch(model2[1]) <= 0)
 						break;
 
-					model3 = m_model.CoeffRunv[coeff_index >= 6];
+					model3 = Model.CoeffRunv[coeff_index >= 6];
 					run = CoeffDec->GetTree(Tables::PcrTree, model3);
 					if (run <= 0)
 					{
@@ -128,8 +128,48 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 				break;
 
 			cg = Tables::CoeffGroups[coeff_index];
-			model1 = model2 = m_model.CoeffRact[pt][ct][cg];
+			model1 = model2 = Model.CoeffRact[pt][ct][cg];
 		}
-		m_leftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[m_aboveBlocksIdx[b]].NotNullDc = m_blockCoeff[b, 0] != 0;
+		LeftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[AboveBlocksIdx[b]].NotNullDc = BlockCoeff[b, 0] != 0;
+	}
+}
+
+void vp6::DecodingContext::ParseCoefficientsHuffman(int dequantAc)
+{
+}
+
+void vp6::DecodingContext::AddPredictorsDc(int ref_frame, int dequantAc)
+{
+	int idx = Tables::Scantable[0];
+
+	for (int b = 0; b < 6; ++b)
+	{
+		auto& ab = AboveBlocks[AboveBlocksIdx[b]];
+		auto& lb = LeftBlocks[Tables::B6To4[b]];
+
+		int count = 0, dc = 0;
+
+		if (ref_frame == lb.RefFrame)
+		{
+			dc += lb.DcCoeff;
+			count++;
+		}
+		if (ref_frame == ab.RefFrame)
+		{
+			dc += ab.DcCoeff;
+			count++;
+		}
+		if (count == 0)
+			dc = PrevDc[Tables::B2p[b]][ref_frame];
+		else if (count == 2)
+			dc /= 2;
+
+		BlockCoeff[b][idx] += (short)dc;
+		PrevDc[Tables::B2p[b]][ref_frame] = BlockCoeff[b][idx];
+		ab.DcCoeff = BlockCoeff[b][idx];
+		ab.RefFrame = ref_frame;
+		lb.DcCoeff = BlockCoeff[b][idx];
+		lb.RefFrame = ref_frame;
+		BlockCoeff[b][idx] *= (short)dequantAc;
 	}
 }

@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <array>
-#include "util.h"
-#include <vp6/decode.h>
+#include "util.hpp"
+#include <vp6/decode.hpp>
 
 constexpr uint32_t MakeTag(char f[4])
 {

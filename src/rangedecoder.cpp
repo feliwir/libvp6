@@ -1,17 +1,16 @@
-#include <vp6/rangedecoder.h>
-#include "tables.h"
+#include <vp6/rangedecoder.hpp>
+#include "tables.hpp"
 
-vp6::RangeDecoder::RangeDecoder(uint8_t* buffer, int startpos, int size)
+vp6::RangeDecoder::RangeDecoder(uint8_t* buffer, int size)
 {
 	m_index = 0;
 	m_high = 255;
 	m_bits = -16;
 	m_size = size;
-	m_startpos = startpos;
 	m_buffer = buffer;
-	m_codeword = (m_buffer[m_startpos + m_index++] << 16);
-	m_codeword |= (m_buffer[m_startpos + m_index++] << 8);
-	m_codeword |= (m_buffer[m_startpos + m_index++]);
+	m_codeword = (m_buffer[m_index++] << 16);
+	m_codeword |= (m_buffer[m_index++] << 8);
+	m_codeword |= (m_buffer[m_index++]);
 }
 
 int vp6::RangeDecoder::ReadBitsNn(int bits)
@@ -87,7 +86,7 @@ int vp6::RangeDecoder::GetBitProbability(int prob)
 
 unsigned int vp6::RangeDecoder::Renormalize()
 {
-	int shift = TablesNormShift::[m_high];
+	int shift = Tables::NormShift[m_high];
 	int bits = m_bits;
 	uint32_t codeword = m_codeword;
 	uint32_t tmp = 0;
@@ -95,13 +94,18 @@ unsigned int vp6::RangeDecoder::Renormalize()
 	codeword <<= shift;
 	bits += shift;
 
-	if (bits >= 0 && (m_startpos + m_index) + 1 < m_buffer.Length)
+	if (bits >= 0 && (m_index) + 1 < m_size)
 	{
-		tmp |= (uint32_t)(m_buffer[m_startpos + m_index++] << 8);
-		tmp |= (uint32_t)(m_buffer[m_startpos + m_index++]);
+		tmp |= (uint32_t)(m_buffer[m_index++] << 8);
+		tmp |= (uint32_t)(m_buffer[m_index++]);
 		codeword |= tmp << bits;
 		bits -= 16;
 	}
 	m_bits = bits;
 	return codeword;
+}
+
+int vp6::RangeDecoder::GetTree(const Tree* tree, uint8_t* probs)
+{
+	return 0;
 }

@@ -1,6 +1,6 @@
 #pragma once 
 #include <stdint.h>
-#include "types.h"
+#include "types.hpp"
 
 namespace vp6
 {
@@ -14,8 +14,8 @@ namespace vp6
 
 		uint16_t YStride;
 		uint16_t UvStride;
-		uint16_t YSize;
-		uint16_t UvSize;
+		uint32_t YSize;
+		uint32_t UvSize;
 
 		uint32_t Framecount;
 		uint32_t LargestFrame;

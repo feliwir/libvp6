@@ -18,9 +18,9 @@ namespace vp6
         }
 
 		template<class T, size_t  N>
-		static constexpr std::array<T, N> Transpose(std::array<T, N> arr)
+		static constexpr const std::array<T, N> Transpose(std::array<T, N> arr)
 		{
-			std::array<uint8_t, 64> result;
+			std::array<T, N> result{};
 
 			for (int i = 0; i < N; ++i)
 			{

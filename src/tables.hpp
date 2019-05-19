@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include <vp6/types.h>
-#include "util.h"
+#include <vp6/types.hpp>
+#include "util.hpp"
 
 namespace vp6
 {
@@ -126,33 +126,33 @@ namespace vp6
         };
 
         static constexpr Tree PvaTree[] = {
-            Tree( 8, 0),
-            Tree( 4, 1),
-            Tree( 2, 2), Tree(-0), Tree(-1),
-            Tree( 2, 3), Tree(-2), Tree(-3),
-            Tree( 4, 4),
-            Tree( 2, 5), Tree(-4), Tree(-5),
-            Tree( 2, 6), Tree(-6), Tree(-7),
+            { 8, 0 },
+            { 4, 1 },
+			{ 2, 2 }, { -0 }, { -1 },
+			{ 2, 3 }, { -2 }, { -3 },
+            { 4, 4 },			   
+			{ 2, 5 }, { -4 }, { -5 },
+			{ 2, 6 }, { -6 }, { -7 },
         };
 
         static constexpr Tree PcTree[] = {
-            Tree( 4, 6),
-            Tree( 2, 7), Tree(-0), Tree(-1),
-            Tree( 4, 8),
-            Tree( 2, 9), Tree(-2), Tree(-3),
-            Tree( 2,10), Tree(-4), Tree(-5),
+            { 4, 6},
+			{ 2, 7}, { -0 }, { -1 },
+            { 4, 8},	   
+			{ 2, 9}, { -2 }, { -3 },
+			{ 2,10}, { -4 }, { -5 },
         };
 
         static constexpr Tree PcrTree[] = {
-            Tree( 8, 0),
-            Tree( 4, 1),
-            Tree( 2, 2), Tree(-1), Tree(-2),
-            Tree( 2, 3), Tree(-3), Tree(-4),
-            Tree( 8, 4),
-            Tree( 4, 5),
-            Tree( 2, 6), Tree(-5), Tree(-6),
-            Tree( 2, 7), Tree(-7), Tree(-8),
-			Tree(-0),
+            { 8, 0 },
+            { 4, 1 },
+			{ 2, 2 }, { -1 }, { -2 },
+			{ 2, 3 }, { -3 }, { -4 },
+            { 8, 4 }, 
+            { 4, 5 },   
+			{ 2, 6 }, { -5 }, { -6 },
+			{ 2, 7 }, { -7 }, { -8 },
+			{-0 },
         };
 
         static constexpr uint8_t CoeffBias[] = {
@@ -194,15 +194,15 @@ namespace vp6
         };
 
         static constexpr Tree PmbtTree[] = {
-            Tree( 8, 1),
-            Tree( 4, 2),
-            Tree( 2, 4), Tree(CodingMode::INTER_MV, true),		  Tree(CodingMode::INTER_PLUS_MV,true),
-            Tree( 2, 5), Tree(CodingMode::INTER_NEAREST_MV, true),Tree(CodingMode::INTER_NEAR_MV,true),
-            Tree( 4, 3),
-            Tree( 2, 6), Tree(CodingMode::INTRA, true),			  Tree(CodingMode::INTER_FOURMV,true),
-            Tree( 4, 7),
-            Tree( 2, 8), Tree(CodingMode::USING_GOLDEN,true),	  Tree(CodingMode::GOLDEN_MV,true),
-            Tree( 2, 9), Tree(CodingMode::GOLD_NEAREST_MV,true),  Tree(CodingMode::GOLD_NEAR_MV,true),
+			{ 8, 1 },
+            { 4, 2 },
+			{ 2, 4 }, { -(int8_t)CodingMode::INTER_MV },			{ -(int8_t)CodingMode::INTER_PLUS_MV },
+			{ 2, 5 }, { -(int8_t)CodingMode::INTER_NEAREST_MV },	{ -(int8_t)CodingMode::INTER_NEAR_MV },
+            { 4, 3 },  											
+			{ 2, 6 }, { -(int8_t)CodingMode::INTRA },				{ -(int8_t)CodingMode::INTER_FOURMV },
+            { 4, 7 }, 											
+			{ 2, 8 }, { -(int8_t)CodingMode::USING_GOLDEN },		{ -(int8_t)CodingMode::GOLDEN_MV },
+			{ 2, 9 }, { -(int8_t)CodingMode::GOLD_NEAREST_MV },		{ -(int8_t)CodingMode::GOLD_NEAR_MV },
         };
 
         static constexpr uint8_t HuffCoeffMap[] = {

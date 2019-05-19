@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include "types.h"
+#include "types.hpp"
+#include <functional>
 
 namespace vp6
 {
@@ -10,7 +11,20 @@ namespace vp6
 	{
 	public:
 		Frame(uint8_t* data, int packet_size,DecodingContext* ctx);
+		~Frame();
 		void Decode();
+	private:
+		void ParseCoeffModels();
+		void DecodeMacroblock(int row, int column);
+		CodingMode DecodeMotionvector(int row, int column);
+		CodingMode ParseMacroblockType(int vt);
+		int GetVectorPredictors(int row, int column, FrameSelect ref_frame);
+		void ParseVectorAdjustment(Motionvector& vect);
+		void RenderMacroblock(CodingMode mode);
+
+		//Output data
+		std::vector<uint8_t*> Planes;
+		std::vector<int> Strides;
 	private:
 		//Intra or Interframe
 		FrameType m_type;
@@ -38,6 +52,11 @@ namespace vp6
 		//Calculated output size
 		int32_t m_presX;
 		int32_t m_presY;
+
+		//Delegate for parsing coefficients
+		std::function<void(int)> m_parseCoeff;
+
+
 
 		bool m_useHuffman;
 		DecodingContext* m_ctx;
