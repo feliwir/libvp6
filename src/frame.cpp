@@ -5,6 +5,7 @@
 #include "tables.hpp"
 
 #include <exception>
+#include <cstring>
 using namespace std::placeholders;
 
 vp6::Frame::Frame(uint8_t* data, int data_size, DecodingContext* ctx) : m_ctx(ctx)
@@ -23,11 +24,11 @@ vp6::Frame::Frame(uint8_t* data, int data_size, DecodingContext* ctx) : m_ctx(ct
 	switch (m_type)
 	{
 	case FrameType::INTRA:
-		ctx->Format = static_cast<Format>(data[1] >> 3);
-		ctx->Profile = static_cast<Profile>(data[1] & 0x06);
+		ctx->Format = static_cast<FormatType>(data[1] >> 3);
+		ctx->Profile = static_cast<ProfileType>(data[1] & 0x06);
 		interlacing = data[1] & 1;
 
-		if (m_seperateCoeff || ctx->Profile == Profile::SIMPLE)
+		if (m_seperateCoeff || ctx->Profile == ProfileType::SIMPLE)
 		{
 			m_coeffOffset = ((data[2] << 8) | data[3]);
 			data += 2;
@@ -81,9 +82,9 @@ vp6::Frame::Frame(uint8_t* data, int data_size, DecodingContext* ctx) : m_ctx(ct
 		break;
 	}
 
-	if (ctx->Profile == Profile::ADVANCED || ctx->Format == Format::VP62)
+	if (ctx->Profile == ProfileType::ADVANCED || ctx->Format == FormatType::VP62)
 	{
-		throw new std::exception("Unsupported profile");
+		throw std::runtime_error("Unsupported profile");
 	}
 
 	m_useHuffman = ctx->RangeDec->ReadBit();
@@ -405,7 +406,7 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
 		}
 		break;
 	default:
-		throw new std::exception("This macroblock type is not supported!");
+		throw std::runtime_error("This macroblock type is not supported!");
 		break;
 	}
 
@@ -445,7 +446,7 @@ vp6::CodingMode vp6::Frame::DecodeMotionvector(int row, int column)
 		mv = vector;
 		break;
 	case CodingMode::INTER_FOURMV:
-		throw new std::exception("Not done FourMV yet");
+		throw std::runtime_error("Not done FourMV yet");
 		break;
 	}
 

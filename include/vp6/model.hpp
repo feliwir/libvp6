@@ -4,10 +4,10 @@
 
 namespace vp6
 {
-	class Model
+	class ModelType
 	{
 	public:
-		Model();
+		ModelType();
 
 		void Reset();
 
@@ -25,7 +25,6 @@ namespace vp6
 		uint8_t VectorSig[2];
 
 		uint8_t MacroblockType[3][10][10];
-
 
 		constexpr void InitializeCoeffOrderTable()
 		{

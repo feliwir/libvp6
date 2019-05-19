@@ -26,9 +26,9 @@ namespace vp6
 		ScalingMode Scaling;
 		bool IsGolden;
 
-		Format Format;
+		FormatType Format;
 		Macroblock* Macroblocks = nullptr;
-		Profile Profile;
+		ProfileType Profile;
 		CodingMode MacroblockType;		
 	};
 }

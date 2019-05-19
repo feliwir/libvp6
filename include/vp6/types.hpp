@@ -29,14 +29,14 @@ namespace vp6
 		int16_t DcCoeff;
 	};
 
-	enum class Format
+	enum class FormatType
 	{
 		VP60 = 6,
 		VP61 = 7,
 		VP62 = 8,
 	};
 
-	enum class Profile
+	enum class ProfileType
 	{
 		SIMPLE = 0,
 		ADVANCED = 3

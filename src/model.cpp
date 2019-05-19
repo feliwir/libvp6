@@ -1,4 +1,5 @@
 #include <vp6/model.hpp>
+#include <cstring>
 
 constexpr uint8_t DefaultMbTypesStats[3][10][2] = {
 	{ {  69, 42 }, {   1,  2 }, {  1,   7 }, {  44, 42 }, {  6, 22 },
@@ -40,15 +41,15 @@ constexpr uint8_t DefaultCoeffRunv[2][14] = {
 constexpr uint8_t DefaultVectorDct[] = { 0xA2, 0xA4 };
 constexpr uint8_t DefaultVectorSig[] = { 0x80, 0x80 };
 
-vp6::Model::Model()
+vp6::ModelType::ModelType()
 {
 	Reset();
 }
 
-void vp6::Model::Reset()
+void vp6::ModelType::Reset()
 {
 	//Vectors
-	std::memcpy(VectorDct,DefaultVectorDct,sizeof(DefaultVectorDct));
+	std::memcpy(VectorDct, DefaultVectorDct, sizeof(DefaultVectorDct));
 	std::memcpy(VectorSig, DefaultVectorSig, sizeof(DefaultVectorSig));
 	std::memcpy(VectorFdv, DefaultVectorFdv, sizeof(DefaultVectorFdv));
 	std::memcpy(VectorPdv, DefaultVectorPdv, sizeof(DefaultVectorPdv));

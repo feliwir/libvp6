@@ -1,5 +1,6 @@
 #include <vp6/decode.hpp>
 #include "tables.hpp"
+#include <cstring>
 
 vp6::DecodingContext::DecodingContext(uint16_t width, uint16_t height,
 	uint32_t denominator, uint32_t numerator,

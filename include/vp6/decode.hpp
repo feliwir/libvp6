@@ -1,6 +1,4 @@
 #pragma once
-#include <stdint.h>
-#include <array>
 #include "context.hpp"
 #include "frame.hpp"
 #include "types.hpp"
@@ -8,6 +6,10 @@
 #include "idct.hpp"
 #include "huffman.hpp"
 #include "rangedecoder.hpp"
+
+#include <stdint.h>
+#include <array>
+#include <memory>
 
 namespace vp6
 {
@@ -33,7 +35,7 @@ namespace vp6
 		Reference* AboveBlocks = nullptr;
 		RangeDecoder* RangeDec = nullptr;
 		RangeDecoder* CoeffDec = nullptr;
-		Model Model;
+		ModelType Model;
 		std::array<std::shared_ptr<Huffman>, 2> HuffDccv;
 		std::array<std::shared_ptr<Huffman>, 2> HuffRunv;
 		std::shared_ptr<Huffman> HuffRact[2][3][6];
