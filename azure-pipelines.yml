@@ -22,3 +22,7 @@ steps:
 - task: CMake@1
   inputs:
     cmakeArgs: .. -DBUILD_TOOLS=ON
+- script: cmake --build .
+  workingDirectory: build
+  failOnStderr: true
+  displayName: 'Compile'
