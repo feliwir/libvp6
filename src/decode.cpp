@@ -11,6 +11,8 @@ vp6::DecodingContext::DecodingContext(uint16_t width, uint16_t height,
 	Numerator = numerator;
 	Framecount = framecount;
 
+	std::memset(BlockCoeff, 0x0, sizeof(BlockCoeff));
+
 	if (flip)
 	{
 		Flip = -1;
@@ -64,21 +66,21 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 		coeff_index = 0;
 		for (;;)
 		{
-			if ((coeff_index > 1 && ct == 0) || CoeffDec->GetBitProbabilityBranch(model2[0]) > 0)
+			if ((coeff_index > 1 && ct == 0) || CoeffDec->GetBitProbabilityBranch(model2[0]))
 			{
 				//Parse a coefficient
-				if (CoeffDec->GetBitProbabilityBranch(model2[2]) > 0)
+				if (CoeffDec->GetBitProbabilityBranch(model2[2]))
 				{
-					if (CoeffDec->GetBitProbabilityBranch(model2[3]) > 0)
+					if (CoeffDec->GetBitProbabilityBranch(model2[3]))
 					{
-						idx = CoeffDec->GetTree(&Tables::PcTree[0], model1);
+						idx = CoeffDec->GetTree(Tables::PcTree, model1);
 						coeff = Tables::CoeffBias[idx + 5];
 						for (int i = Tables::CoeffBitLength[idx]; i >= 0; --i)
 							coeff += CoeffDec->GetBitProbability(Tables::CoeffParseTable[idx][i]) << i;
 					}
 					else
 					{
-						if (CoeffDec->GetBitProbabilityBranch(model2[4]) > 0)
+						if (CoeffDec->GetBitProbabilityBranch(model2[4]))
 							coeff = 3 + CoeffDec->GetBitProbability(model1[5]);
 						else
 							coeff = 2;
@@ -130,7 +132,7 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 			cg = Tables::CoeffGroups[coeff_index];
 			model1 = model2 = Model.CoeffRact[pt][ct][cg];
 		}
-		LeftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[AboveBlocksIdx[b]].NotNullDc = BlockCoeff[b][0] != 0;
+		LeftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[AboveBlocksIdx[b]].NotNullDc = !!BlockCoeff[b][0];
 	}
 }
 
