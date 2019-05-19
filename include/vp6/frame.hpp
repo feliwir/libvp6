@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "types.hpp"
 #include <functional>
+#include <vector>
 
 namespace vp6
 {
@@ -55,8 +56,6 @@ namespace vp6
 
 		//Delegate for parsing coefficients
 		std::function<void(int)> m_parseCoeff;
-
-
 
 		bool m_useHuffman;
 		DecodingContext* m_ctx;
