@@ -21,4 +21,4 @@ trigger:
 steps:
 - task: CMake@1
   inputs:
-    cmakeArgs: 
+    cmakeArgs: .. -DBUILD_TOOLS=ON
