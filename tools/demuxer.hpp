@@ -4,7 +4,7 @@
 #include "util.hpp"
 #include <vp6/decode.hpp>
 
-constexpr uint32_t MakeTag(char f[4])
+constexpr uint32_t MakeTag(const char f[4])
 {
 	return f[0] | f[1] << 8 | f[2] << 16 | f[3] << 24;
 }

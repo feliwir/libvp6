@@ -14,6 +14,8 @@ namespace vp6
 		{
 			#ifdef _MSC_VER
 			return _byteswap_ushort(num);
+			#else
+			return __builtin_bswap16(num);
 			#endif
 		}
 
@@ -21,6 +23,8 @@ namespace vp6
 		{
 			#ifdef _MSC_VER
 			return _byteswap_ulong(num);
+			#else
+			return __builtin_bswap32(num);
 			#endif
 		}
 
@@ -28,6 +32,8 @@ namespace vp6
 		{
 			#ifdef _MSC_VER
 			return _byteswap_uint64(num);
+			#else
+			return __builtin_bswap64(num);
 			#endif
 		}
 

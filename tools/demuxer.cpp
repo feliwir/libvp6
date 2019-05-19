@@ -56,6 +56,8 @@ bool vp6::Demuxer::ProcessHeader()
 	{
 		ProcessVideoHeader(m_color);
 	}
+
+	return true;
 }
 
 bool vp6::Demuxer::CheckCodec()
@@ -78,6 +80,7 @@ bool vp6::Demuxer::ProcessVideoHeader(std::shared_ptr<DecodingContext>& ctx)
 	auto numerator = m_reader.Read<uint32_t>();
 
 	ctx = std::make_shared<DecodingContext>(width, height, denominator, numerator, framecount, true);
+	return true;
 }
 
 bool vp6::Demuxer::ReadPacket()
@@ -99,7 +102,7 @@ bool vp6::Demuxer::ReadPacket()
 		if (chunk_type == MV0K_TAG || chunk_type == MV0F_TAG)
 		{
 			m_color->ProcessPacket(m_buffer.data(), chunk_size);
-			auto& buf = Util::Yuv420pToRgb(m_color->GetCurrentFrame()->Planes, m_color->Width, m_color->Height);
+			const auto& buf = Util::Yuv420pToRgb(m_color->GetCurrentFrame()->Planes, m_color->Width, m_color->Height);
 			stbi_write_png((std::to_string(n) + ".png").c_str(), m_color->Width, m_color->Height, 3, buf.data(), 0);
 		}
 		//Pass packet to the alpha stream
