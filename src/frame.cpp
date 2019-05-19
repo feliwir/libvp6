@@ -147,9 +147,7 @@ void vp6::Frame::Decode()
 
 	ParseCoeffModels();
 
-	for (int i = 0; i < 3; ++i)
-		for (int j = 0; j < 3; ++j)
-			m_ctx->PrevDc[i][j] = 0;
+	std::memset(m_ctx->PrevDc, 0, sizeof(m_ctx->PrevDc));
 
 	m_ctx->PrevDc[1][static_cast<int>(FrameSelect::CURRENT)] = 128;
 	m_ctx->PrevDc[2][static_cast<int>(FrameSelect::CURRENT)] = 128;
@@ -224,11 +222,13 @@ void vp6::Frame::ParseCoeffModels()
 	auto rangeDec = m_ctx->RangeDec;
 	auto& model = m_ctx->Model;
 
-	std::memset(DefaultProb, 0x80, sizeof(DefaultProb));
+	std::fill_n(DefaultProb, 11, 0x80);
 
 	/* plane type (0 for Y, 1 for U or V) */
 	for (int pt = 0; pt < 2; pt++)
+	{
 		for (int node = 0; node < 11; node++)
+		{
 			if (rangeDec->GetBitProbability(Tables::DccvPct[pt][node]))
 			{
 				DefaultProb[node] = rangeDec->ReadBitsNn(7);
@@ -237,6 +237,8 @@ void vp6::Frame::ParseCoeffModels()
 			else if (m_type == FrameType::INTRA) {
 				model.CoeffDccv[pt][node] = DefaultProb[node];
 			}
+		}
+	}
 
 	if (rangeDec->ReadBit())
 	{

@@ -25,6 +25,10 @@ namespace vp6
 		void ParseCoefficientsHuffman(int dequantAc);
 		void AddPredictorsDc(int ref_frame, int dequantAc);
 
+		inline std::shared_ptr<Frame> GetCurrentFrame()
+		{
+			return Frames[static_cast<int>(FrameSelect::CURRENT)];
+		}
 	public:
 		Reference* AboveBlocks = nullptr;
 		RangeDecoder* RangeDec = nullptr;

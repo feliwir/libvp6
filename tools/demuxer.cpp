@@ -1,4 +1,7 @@
 #include "demuxer.hpp"
+#define STB_IMAGE_WRITE_IMPLEMENTATION 
+#include <stb_image_write.h>
+#include <string>
 
 vp6::Demuxer::Demuxer(std::istream&& stream) : m_reader(stream)
 {
@@ -80,6 +83,7 @@ bool vp6::Demuxer::ProcessVideoHeader(std::shared_ptr<DecodingContext>& ctx)
 bool vp6::Demuxer::ReadPacket()
 {
 	bool read = !m_reader.Stream().eof();
+	int n = 0;
 	while (read)
 	{
 		auto chunk_type = m_reader.Read<int32_t>();
@@ -88,13 +92,15 @@ bool vp6::Demuxer::ReadPacket()
 		if (chunk_size < 8)
 			return false;
 
-		m_buffer.resize(chunk_size);
+		m_buffer.resize(chunk_size - 8);
 		m_reader.ReadBuffer(m_buffer);
 
 		//Pass packet to the video stream
 		if (chunk_type == MV0K_TAG || chunk_type == MV0F_TAG)
 		{
 			m_color->ProcessPacket(m_buffer.data(), chunk_size);
+			auto& buf = Util::Yuv420pToRgb(m_color->GetCurrentFrame()->Planes, m_color->Width, m_color->Height);
+			stbi_write_png((std::to_string(n) + ".png").c_str(), m_color->Width, m_color->Height, 3, buf.data(), 0);
 		}
 		//Pass packet to the alpha stream
 		else if (chunk_type == AV0K_TAG || chunk_type == AV0F_TAG)

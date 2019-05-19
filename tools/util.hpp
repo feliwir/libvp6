@@ -9,6 +9,7 @@ namespace vp6
 {
 	class Util
 	{
+	public:
 		static inline uint16_t Reverse(const uint16_t num)
 		{
 			#ifdef _MSC_VER
@@ -28,6 +29,42 @@ namespace vp6
 			#ifdef _MSC_VER
 			return _byteswap_uint64(num);
 			#endif
+		}
+
+		static inline std::vector<uint8_t> Yuv420pToRgb(std::vector<uint8_t*> planes, int width, int height)
+		{
+			std::vector<uint8_t> buffer;
+			uint32_t size = width * height;
+
+			uint8_t* ybuf = planes[0];
+			uint8_t* ubuf = planes[1];
+			uint8_t* vbuf = planes[2];
+
+			//Allocate the RGB buffer
+			buffer.resize(size * 3);
+
+			for (int row = 0; row < height; ++row)
+			{
+				for (int col = 0; col < width; ++col)
+				{
+					//get YUV values
+					auto& y = ybuf[row * width + col];
+					auto& u = ubuf[(row / 2) * (width / 2) + col / 2];
+					auto& v = vbuf[(row / 2) * (width / 2) + col / 2];
+
+					//get RGB values
+					auto& r = buffer[(row * width + col) * 3];
+					auto& g = buffer[(row * width + col) * 3 + 1];
+					auto& b = buffer[(row * width + col) * 3 + 2];
+
+					//perform the conversion
+					b = (1.164 * (y - 16) + 2.018 * (u - 128));
+					g = (1.164 * (y - 16) - 0.813 * (v - 128) - 0.391 * (u - 128));
+					r = (1.164 * (y - 16) + 1.596 * (v - 128));
+				}
+			}
+
+			return buffer;
 		}
 	};
 

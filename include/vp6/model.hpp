@@ -30,6 +30,7 @@ namespace vp6
 		constexpr void InitializeCoeffOrderTable()
 		{
 			uint8_t idx = 1;
+			CoeffIndexToPos[0] = 0;
 
 			for (uint8_t i = 0; i < 16; i++)
 				for (uint8_t pos = 1; pos < 64; pos++)

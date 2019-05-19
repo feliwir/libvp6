@@ -13,6 +13,10 @@ namespace vp6
 		Frame(uint8_t* data, int packet_size,DecodingContext* ctx);
 		~Frame();
 		void Decode();
+
+		//Output data
+		std::vector<uint8_t*> Planes;
+		std::vector<int> Strides;
 	private:
 		void ParseCoeffModels();
 		void DecodeMacroblock(int row, int column);
@@ -21,10 +25,6 @@ namespace vp6
 		int GetVectorPredictors(int row, int column, FrameSelect ref_frame);
 		void ParseVectorAdjustment(Motionvector& vect);
 		void RenderMacroblock(CodingMode mode);
-
-		//Output data
-		std::vector<uint8_t*> Planes;
-		std::vector<int> Strides;
 	private:
 		//Intra or Interframe
 		FrameType m_type;

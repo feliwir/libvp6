@@ -16,7 +16,7 @@ vp6::RangeDecoder::RangeDecoder(uint8_t* buffer, int size)
 int vp6::RangeDecoder::ReadBitsNn(int bits)
 {
 	int v = ReadBits(bits) << 1;
-	return v + !!v;
+	return v + !v;
 }
 
 int vp6::RangeDecoder::ReadBits(int bits)

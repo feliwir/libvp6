@@ -38,7 +38,7 @@ void vp6::DecodingContext::ProcessPacket(uint8_t * data, int packet_size)
 {
 	Frames[(int)FrameSelect::PREVIOUS] = Frames[(int)FrameSelect::CURRENT];
 
-	auto frame = Frames[(int)FrameSelect::CURRENT] = std::make_shared<Frame>(data, packet_size - 8, this);
+	auto frame = Frames[static_cast<int>(FrameSelect::CURRENT)] = std::make_shared<Frame>(data, packet_size - 8, this);
 	frame->Decode();
 }
 
@@ -130,7 +130,7 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 			cg = Tables::CoeffGroups[coeff_index];
 			model1 = model2 = Model.CoeffRact[pt][ct][cg];
 		}
-		LeftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[AboveBlocksIdx[b]].NotNullDc = BlockCoeff[b, 0] != 0;
+		LeftBlocks[Tables::B6To4[b]].NotNullDc = AboveBlocks[AboveBlocksIdx[b]].NotNullDc = BlockCoeff[b][0] != 0;
 	}
 }
 
