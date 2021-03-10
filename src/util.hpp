@@ -1,34 +1,34 @@
-#pragma once 
+#pragma once
 #include <array>
+#include <stddef.h>
+#include <stdint.h>
 
 namespace vp6
 {
-    class Util
+class Util
+{
+  public:
+    template <class T> static inline uint8_t ClipByte(T input)
     {
-        public:
-        template<class T>
-        static inline uint8_t ClipByte(T input)
+        if (input < 0)
+            return 0;
+        else if (input > 255)
+            return 255;
+        else
+            return (uint8_t)input;
+    }
+
+    template <class T, size_t N> static constexpr const std::array<T, N> Transpose(std::array<T, N> arr)
+    {
+        std::array<T, N> result{};
+
+        for (int i = 0; i < N; ++i)
         {
-            if (input < 0)
-                return 0;
-            else if (input > 255)
-                return 255;
-            else
-                return (uint8_t)input;
+            uint8_t x = arr[i];
+            result[i] = (uint8_t)(((x) >> 3) | (((x)&7) << 3));
         }
 
-		template<class T, size_t  N>
-		static constexpr const std::array<T, N> Transpose(std::array<T, N> arr)
-		{
-			std::array<T, N> result{};
-
-			for (int i = 0; i < N; ++i)
-			{
-				uint8_t x = arr[i];
-				result[i] = (uint8_t)(((x) >> 3) | (((x) & 7) << 3));
-			}
-
-			return result;
-		}
-    };
-}
+        return result;
+    }
+};
+} // namespace vp6

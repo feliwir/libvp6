@@ -1,63 +1,65 @@
 #pragma once
-#include <stdint.h>
 #include "types.hpp"
 #include <functional>
+#include <stdint.h>
 #include <vector>
 
 namespace vp6
 {
-	class DecodingContext;
+class DecodingContext;
 
-	class Frame
-	{
-	public:
-		Frame(uint8_t* data, int packet_size,DecodingContext* ctx);
-		~Frame();
-		void Decode();
+class Frame
+{
+  public:
+    Frame(uint8_t *data, int packet_size, DecodingContext *ctx);
+    ~Frame();
+    void Decode();
 
-		//Output data
-		std::vector<uint8_t*> Planes;
-		std::vector<int> Strides;
-	private:
-		void ParseCoeffModels();
-		void DecodeMacroblock(int row, int column);
-		CodingMode DecodeMotionvector(int row, int column);
-		CodingMode ParseMacroblockType(int vt);
-		int GetVectorPredictors(int row, int column, FrameSelect ref_frame);
-		void ParseVectorAdjustment(Motionvector& vect);
-		void RenderMacroblock(CodingMode mode);
-	private:
-		//Intra or Interframe
-		FrameType m_type;
-		bool m_isGolden;
+    // Output data
+    std::vector<uint8_t *> Planes;
+    std::vector<int> Strides;
 
-		//Arithmetic coding 
-		int32_t m_quantizer;
-		int32_t m_dequant_ac;
-		int32_t m_dequant_dc;
-		bool m_seperateCoeff;
-		uint16_t m_coeffOffset;
+  private:
+    void ParseCoeffModels();
+    void DecodeMacroblock(int row, int column);
+    CodingMode DecodeMotionvector(int row, int column);
+    CodingMode ParseMacroblockType(int vt);
+    int GetVectorPredictors(int row, int column, FrameSelect ref_frame);
+    void ParseVectorAdjustment(Motionvector &vect);
+    void RenderMacroblock(CodingMode mode);
 
-		//Fragments/ Amount of MBs
-		uint8_t m_vfrags;
-		uint8_t m_hfrags;
+  private:
+    // Intra or Interframe
+    FrameType m_type;
+    bool m_isGolden;
 
-		//Calculated size
-		int32_t m_dimX;
-		int32_t m_dimY;
+    // Arithmetic coding
+    int32_t m_quantizer;
+    int32_t m_dequant_ac;
+    int32_t m_dequant_dc;
+    bool m_seperateCoeff;
+    uint16_t m_coeffOffset;
 
-		//Output fragments
-		int32_t m_ovfrags;
-		int32_t m_ohfrags;
+    // Fragments/ Amount of MBs
+    uint8_t m_vfrags;
+    uint8_t m_hfrags;
 
-		//Calculated output size
-		int32_t m_presX;
-		int32_t m_presY;
+    // Calculated size
+    int32_t m_dimX;
+    int32_t m_dimY;
 
-		//Delegate for parsing coefficients
-		std::function<void(int)> m_parseCoeff;
+    // Output fragments
+    int32_t m_ovfrags;
+    int32_t m_ohfrags;
 
-		bool m_useHuffman;
-		DecodingContext* m_ctx;
-	};
-}
+    // Calculated output size
+    int32_t m_presX;
+    int32_t m_presY;
+
+    // Delegate for parsing coefficients
+    std::function<void(int)> m_parseCoeff;
+
+    bool m_useHuffman;
+    DecodingContext *m_ctx;
+};
+} // namespace vp6
