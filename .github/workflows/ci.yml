@@ -1,0 +1,32 @@
+name: Build libvp6
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    env:
+      # Indicates the CMake build directory where project files and binaries are being produced.
+      CMAKE_BUILD_DIR: ${{ github.workspace }}/build/
+
+    steps:
+    - name: Checkout CIDE source code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Get CMake
+      uses: lukka/get-cmake@latest
+
+    - name: CMake Configure
+      run: |
+        cmake -B "${{ env.CMAKE_BUILD_DIR }}"
+
+    - name: CMake Build
+      run: |
+        cmake --build "${{ env.CMAKE_BUILD_DIR }}"
