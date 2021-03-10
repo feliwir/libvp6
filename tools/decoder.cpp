@@ -5,11 +5,15 @@
 #include <stdlib.h>
 #include <vp6/decode.hpp>
 
-void load(const std::string &file)
+bool load(const std::string &file)
 {
     std::ifstream input(file);
+    if(input.fail())
+        return false;
 
     vp6::Demuxer demuxer(std::move(input));
+
+    return true;
 }
 
 int main(int argc, char **argv)
@@ -24,10 +28,16 @@ int main(int argc, char **argv)
     {
         auto file = result["file"].as<std::string>();
 
-        load(file);
+        if(!load(file))
+        {
+            std::cout << "Failed to load: " << file << std::endl;
+            return EXIT_FAILURE;
+        }
     }
     else
     {
-        options.help();
+        std::cout << options.help() << std::endl;
+        return EXIT_FAILURE;
     }
+    return EXIT_SUCCESS;
 }
