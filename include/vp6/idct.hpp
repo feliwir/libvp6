@@ -11,8 +11,11 @@ class IDCT
         Calculate(dest, blockOffset, stride, input, 1);
     }
 
+    //IDCT
     void Calculate(uint8_t *dest, int blockOffset, int stride, short *input, int type);
 
+
+    //TODO: IDCT10
   private:
     inline int M(int a, int b)
     {

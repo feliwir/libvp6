@@ -140,7 +140,7 @@ void vp6::DecodingContext::ParseCoefficientsHuffman(int dequantAc)
 {
 }
 
-void vp6::DecodingContext::AddPredictorsDc(int ref_frame, int dequantAc)
+void vp6::DecodingContext::AddPredictorsDc(FrameSelect ref_frame, int dequantAc)
 {
     int idx = Tables::Scantable[0];
 
@@ -162,12 +162,12 @@ void vp6::DecodingContext::AddPredictorsDc(int ref_frame, int dequantAc)
             count++;
         }
         if (count == 0)
-            dc = PrevDc[Tables::B2p[b]][ref_frame];
+            dc = PrevDc[Tables::B2p[b]][static_cast<int>(ref_frame)];
         else if (count == 2)
             dc /= 2;
 
         BlockCoeff[b][idx] += (short)dc;
-        PrevDc[Tables::B2p[b]][ref_frame] = BlockCoeff[b][idx];
+        PrevDc[Tables::B2p[b]][static_cast<int>(ref_frame)] = BlockCoeff[b][idx];
         ab.DcCoeff = BlockCoeff[b][idx];
         ab.RefFrame = ref_frame;
         lb.DcCoeff = BlockCoeff[b][idx];

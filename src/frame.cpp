@@ -30,7 +30,7 @@ vp6::Frame::Frame(uint8_t *data, int data_size, DecodingContext *ctx) : m_ctx(ct
 
         if (m_seperateCoeff || ctx->Profile == ProfileType::SIMPLE)
         {
-            m_coeffOffset = ((data[2] << 8) | data[3]);
+            m_coeffOffset = ((data[2] << 8) | data[3]) - 2;
             data += 2;
             data_size -= 2;
         }
@@ -155,13 +155,13 @@ void vp6::Frame::Decode()
 
     for (int block = 0; block < 4 * m_ctx->MbWidth + 6; block++)
     {
-        m_ctx->AboveBlocks[block].RefFrame = static_cast<int>(FrameSelect::NONE);
+        m_ctx->AboveBlocks[block].RefFrame = FrameSelect::NONE;
         m_ctx->AboveBlocks[block].DcCoeff = 0;
         m_ctx->AboveBlocks[block].NotNullDc = 0;
     }
 
-    m_ctx->AboveBlocks[2 * m_ctx->MbWidth + 2].RefFrame = static_cast<int>(FrameSelect::CURRENT);
-    m_ctx->AboveBlocks[3 * m_ctx->MbWidth + 4].RefFrame = static_cast<int>(FrameSelect::CURRENT);
+    m_ctx->AboveBlocks[2 * m_ctx->MbWidth + 2].RefFrame = FrameSelect::CURRENT;
+    m_ctx->AboveBlocks[3 * m_ctx->MbWidth + 4].RefFrame = FrameSelect::CURRENT;
 
     if (m_ctx->Flip < 0)
         mb_offset = 7;
@@ -176,7 +176,7 @@ void vp6::Frame::Decode()
 
         for (int block = 0; block < 4; ++block)
         {
-            m_ctx->LeftBlocks[block].RefFrame = static_cast<int>(FrameSelect::NONE);
+            m_ctx->LeftBlocks[block].RefFrame =FrameSelect::NONE;
             m_ctx->LeftBlocks[block].DcCoeff = 0;
             m_ctx->LeftBlocks[block].NotNullDc = 0;
         }
@@ -230,7 +230,7 @@ void vp6::Frame::ParseCoeffModels()
     {
         for (int node = 0; node < 11; node++)
         {
-            if (rangeDec->GetBitProbability(Tables::DccvPct[pt][node]))
+            if (rangeDec->GetBitProbabilityBranch(Tables::DccvPct[pt][node]))
             {
                 DefaultProb[node] = rangeDec->ReadBitsNn(7);
                 model.CoeffDccv[pt][node] = DefaultProb[node];
@@ -387,11 +387,11 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
 {
     int ab, b_max, b;
     int plane;
-    int ref_frame = (int)Tables::ReferenceFrame[(int)mode];
+    FrameSelect ref_frame = Tables::ReferenceFrame[(int)mode];
 
     m_ctx->AddPredictorsDc(ref_frame, m_dequant_dc);
 
-    auto frame_ref = m_ctx->Frames[ref_frame];
+    auto frame_ref = m_ctx->Frames[static_cast<int>(ref_frame)];
 
     // TODO: add profile for alpha
     ab = 6;
@@ -404,6 +404,7 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
         {
             int16_t *slice = m_ctx->BlockCoeff[b];
             plane = Tables::B2p[b];
+						//TODO: IDCT selector
             m_ctx->Idct.Put(Planes[plane], m_ctx->BlockOffset[b], Strides[plane], slice);
         }
         break;

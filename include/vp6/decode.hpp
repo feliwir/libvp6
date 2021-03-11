@@ -24,7 +24,7 @@ class DecodingContext : public Context
     void ProcessPacket(uint8_t *packet, int packet_size);
     void ParseCoefficients(int dequantAc);
     void ParseCoefficientsHuffman(int dequantAc);
-    void AddPredictorsDc(int ref_frame, int dequantAc);
+    void AddPredictorsDc(FrameSelect ref_frame, int dequantAc);
 
     inline std::shared_ptr<Frame> GetCurrentFrame()
     {

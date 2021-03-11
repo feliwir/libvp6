@@ -18,7 +18,7 @@ bool load(const std::string &file)
 
 int main(int argc, char **argv)
 {
-    cxxopts::Options options("vp6_decoder", "A decoder that converts .flv vp6 streams to a set of images");
+    cxxopts::Options options("vp6_decoder", "A decoder that converts EA .vp6 streams to a set of images");
 
     options.add_options()("f,file", "File name", cxxopts::value<std::string>());
 

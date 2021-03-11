@@ -24,10 +24,18 @@ struct Tree
     int8_t ProbIdx;
 };
 
+enum class FrameSelect : int
+{
+    NONE = -1,
+    CURRENT = 0,
+    PREVIOUS = 1,
+    GOLDEN = 2,
+};
+
 struct Reference
 {
     uint8_t NotNullDc;
-    int32_t RefFrame;
+    FrameSelect RefFrame;
     int16_t DcCoeff;
 };
 
@@ -75,14 +83,6 @@ struct Macroblock
 
     CodingMode Type;
     Motionvector Mv;
-};
-
-enum class FrameSelect : int
-{
-    NONE = -1,
-    CURRENT = 0,
-    PREVIOUS = 1,
-    GOLDEN = 2,
 };
 
 enum class FrameType : int
