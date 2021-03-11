@@ -24,7 +24,9 @@ bool vp6::Demuxer::ProcessHeader()
 {
     auto headersize = m_reader.Read<uint32_t>();
     if (headersize < 8)
+    {
         return false;
+    }
 
     if (m_fourcc == AVP6_TAG)
     {
@@ -69,7 +71,9 @@ bool vp6::Demuxer::CheckCodec()
 bool vp6::Demuxer::ProcessVideoHeader(std::shared_ptr<DecodingContext> &ctx)
 {
     if (!CheckCodec())
+    {
         return false;
+    }
 
     auto width = m_reader.Read<uint16_t>();
     auto height = m_reader.Read<uint16_t>();
@@ -92,7 +96,9 @@ bool vp6::Demuxer::ReadPacket()
         auto chunk_size = m_reader.Read<int32_t>();
 
         if (chunk_size < 8)
+        {
             return false;
+        }
 
         m_buffer.resize(chunk_size - 8);
         m_reader.ReadBuffer(m_buffer);

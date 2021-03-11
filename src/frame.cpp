@@ -164,19 +164,25 @@ void vp6::Frame::Decode()
     m_ctx->AboveBlocks[3 * m_ctx->MbWidth + 4].RefFrame = FrameSelect::CURRENT;
 
     if (m_ctx->Flip < 0)
+    {
         mb_offset = 7;
+    }
 
     // The loop for decoding each Macroblock
     for (int row = 0; row < m_ctx->MbHeight; ++row)
     {
         if (m_ctx->Flip < 0)
+        {
             mb_row_flip = (int)m_ctx->MbHeight - row - 1;
+        }
         else
+        {
             mb_row_flip = row;
+        }
 
         for (int block = 0; block < 4; ++block)
         {
-            m_ctx->LeftBlocks[block].RefFrame =FrameSelect::NONE;
+            m_ctx->LeftBlocks[block].RefFrame = FrameSelect::NONE;
             m_ctx->LeftBlocks[block].DcCoeff = 0;
             m_ctx->LeftBlocks[block].NotNullDc = 0;
         }
@@ -220,7 +226,7 @@ void vp6::Frame::ParseCoeffModels()
     int DefaultProb[11];
     int cg, ctx, pos;
     int ct; /* code type */
-    auto rangeDec = m_ctx->RangeDec;
+    auto *rangeDec = m_ctx->RangeDec;
     auto &model = m_ctx->Model;
 
     std::fill_n(DefaultProb, 11, 0x80);
@@ -299,23 +305,31 @@ void vp6::Frame::ParseCoeffModels()
             m_ctx->HuffRunv[pt] = std::make_shared<Huffman>(runv, Tables::HuffRunMap, 9);
 
             for (int ct = 0; ct < 3; ct++)
+            {
                 for (int cg = 0; cg < 6; cg++)
                 {
                     uint8_t *ract = model.CoeffRact[pt][ct][cg];
                     m_ctx->HuffRact[pt][ct][cg] = std::make_shared<Huffman>(ract, Tables::HuffCoeffMap, 12);
                 }
+            }
         }
     }
     else
     {
         // Calculate DCCT
         for (int pt = 0; pt < 2; pt++)
+        {
             for (int ctx = 0; ctx < 3; ctx++)
+            {
                 for (int node = 0; node < 5; node++)
+                {
                     model.CoeffDcct[pt][ctx][node] =
                         std::clamp(((model.CoeffDccv[pt][node] * Tables::DccvLc[ctx][node][0] + 128) >> 8) +
                                        Tables::DccvLc[ctx][node][1],
                                    1, 255);
+                }
+            }
+        }
     }
 }
 
@@ -338,17 +352,19 @@ void vp6::Frame::DecodeMacroblock(int row, int column)
     RenderMacroblock(mode);
 }
 
-int vp6::Frame::GetVectorPredictors(int row, int column, FrameSelect ref_frame)
+int vp6::Frame::GetVectorPredictors(int /*row*/, int /*column*/, FrameSelect /*ref_frame*/)
 {
     return 0;
 }
 
 void vp6::Frame::ParseVectorAdjustment(Motionvector &vect)
 {
-    auto rd = m_ctx->RangeDec;
+    auto *rd = m_ctx->RangeDec;
     vect = {0, 0};
     if (m_ctx->VectorCandidatePos < 2)
+    {
         vect = m_ctx->VectorCandidate[0];
+    }
 
     for (int comp = 0; comp < 2; ++comp)
     {
@@ -357,15 +373,18 @@ void vp6::Frame::ParseVectorAdjustment(Motionvector &vect)
         if (rd->GetBitProbabilityBranch(m_ctx->Model.VectorDct[comp]) > 0)
         {
             const std::array<uint8_t, 7> prob_order = {0, 1, 2, 7, 6, 5, 4};
-            for (int i = 0; i < prob_order.size(); ++i)
+            for (int j : prob_order)
             {
-                int j = prob_order[i];
                 delta |= rd->GetBitProbability(m_ctx->Model.VectorFdv[comp][j]) << j;
             }
             if ((delta & 0xF0) > 0)
+            {
                 delta |= rd->GetBitProbability(m_ctx->Model.VectorFdv[comp][3]) << 3;
+            }
             else
+            {
                 delta |= 8;
+            }
         }
         else
         {
@@ -374,12 +393,18 @@ void vp6::Frame::ParseVectorAdjustment(Motionvector &vect)
         }
 
         if (!!delta && rd->GetBitProbabilityBranch(m_ctx->Model.VectorSig[comp]) > 0)
+        {
             delta = -delta;
+        }
 
         if (comp <= 0)
+        {
             vect.X += delta;
+        }
         else
+        {
             vect.Y += delta;
+        }
     }
 }
 
@@ -402,10 +427,9 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
     case CodingMode::INTRA:
         for (b = 0; b < b_max; ++b)
         {
-            int16_t *slice = m_ctx->BlockCoeff[b];
+            int16_t *block_coeffs = m_ctx->BlockCoeff[b];
             plane = Tables::B2p[b];
-						//TODO: IDCT selector
-            m_ctx->Idct.Put(Planes[plane], m_ctx->BlockOffset[b], Strides[plane], slice);
+            m_ctx->Idct.Put(Planes[plane], m_ctx->BlockOffset[b], Strides[plane], block_coeffs);
         }
         break;
     default:
@@ -454,7 +478,9 @@ vp6::CodingMode vp6::Frame::DecodeMotionvector(int row, int column)
 
     m_ctx->Macroblocks[row * m_ctx->MbWidth + column].Mv = mv;
     for (int b = 0; b < 6; ++b)
+    {
         m_ctx->Mvs[b] = mv;
+    }
 
     return m_ctx->MacroblockType;
 }
@@ -462,13 +488,11 @@ vp6::CodingMode vp6::Frame::DecodeMotionvector(int row, int column)
 vp6::CodingMode vp6::Frame::ParseMacroblockType(int vt)
 {
     uint8_t *mb_type_model = m_ctx->Model.MacroblockType[vt][(int)m_ctx->MacroblockType];
-    auto rd = m_ctx->RangeDec;
+    auto *rd = m_ctx->RangeDec;
     if (rd->GetBitProbabilityBranch(mb_type_model[0]) > 0)
     {
         return m_ctx->MacroblockType;
     }
-    else
-    {
-        return (CodingMode)rd->GetTree(Tables::PmbtTree, mb_type_model);
-    }
+
+    return (CodingMode)rd->GetTree(Tables::PmbtTree, mb_type_model);
 }

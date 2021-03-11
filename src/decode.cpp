@@ -30,10 +30,14 @@ vp6::DecodingContext::DecodingContext(uint16_t width, uint16_t height, uint32_t 
 vp6::DecodingContext::~DecodingContext()
 {
     if (RangeDec != nullptr)
+    {
         delete RangeDec;
+    }
 
     if (AboveBlocks != nullptr)
+    {
         delete AboveBlocks;
+    }
 }
 
 void vp6::DecodingContext::ProcessPacket(uint8_t *data, int packet_size)
@@ -57,7 +61,9 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
         int run = 1;
 
         if (b > 3)
+        {
             pt = 1;
+        }
 
         ctx = LeftBlocks[Tables::B6To4[b]].NotNullDc + AboveBlocks[AboveBlocksIdx[b]].NotNullDc;
         model1 = Model.CoeffDccv[pt];
@@ -76,14 +82,20 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
                         idx = CoeffDec->GetTree(Tables::PcTree, model1);
                         coeff = Tables::CoeffBias[idx + 5];
                         for (int i = Tables::CoeffBitLength[idx]; i >= 0; --i)
+                        {
                             coeff += CoeffDec->GetBitProbability(Tables::CoeffParseTable[idx][i]) << i;
+                        }
                     }
                     else
                     {
                         if (CoeffDec->GetBitProbabilityBranch(model2[4]))
+                        {
                             coeff = 3 + CoeffDec->GetBitProbability(model1[5]);
+                        }
                         else
+                        {
                             coeff = 2;
+                        }
                     }
 
                     ct = 2;
@@ -97,7 +109,9 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
                 sign = CoeffDec->ReadBit();
                 coeff = (coeff ^ -sign) + sign;
                 if (coeff_index > 0)
+                {
                     coeff *= dequantAc;
+                }
 
                 idx = Model.CoeffIndexToPos[coeff_index];
                 BlockCoeff[b][Tables::Scantable[idx]] = (short)coeff;
@@ -110,7 +124,9 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
                 if (coeff_index > 0)
                 {
                     if (CoeffDec->GetBitProbabilityBranch(model2[1]) <= 0)
+                    {
                         break;
+                    }
 
                     model3 = Model.CoeffRunv[coeff_index >= 6];
                     run = CoeffDec->GetTree(Tables::PcrTree, model3);
@@ -127,7 +143,9 @@ void vp6::DecodingContext::ParseCoefficients(int dequantAc)
 
             coeff_index += run;
             if (coeff_index >= 64)
+            {
                 break;
+            }
 
             cg = Tables::CoeffGroups[coeff_index];
             model1 = model2 = Model.CoeffRact[pt][ct][cg];
@@ -162,9 +180,13 @@ void vp6::DecodingContext::AddPredictorsDc(FrameSelect ref_frame, int dequantAc)
             count++;
         }
         if (count == 0)
+        {
             dc = PrevDc[Tables::B2p[b]][static_cast<int>(ref_frame)];
+        }
         else if (count == 2)
+        {
             dc /= 2;
+        }
 
         BlockCoeff[b][idx] += (short)dc;
         PrevDc[Tables::B2p[b]][static_cast<int>(ref_frame)] = BlockCoeff[b][idx];

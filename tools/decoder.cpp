@@ -8,8 +8,10 @@
 bool load(const std::string &file)
 {
     std::ifstream input(file);
-    if(input.fail())
+    if (input.fail())
+    {
         return false;
+    }
 
     vp6::Demuxer demuxer(std::move(input));
 
@@ -28,7 +30,7 @@ int main(int argc, char **argv)
     {
         auto file = result["file"].as<std::string>();
 
-        if(!load(file))
+        if (!load(file))
         {
             std::cout << "Failed to load: " << file << std::endl;
             return EXIT_FAILURE;

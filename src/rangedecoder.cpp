@@ -107,11 +107,16 @@ unsigned int vp6::RangeDecoder::Renormalize()
 
 int vp6::RangeDecoder::GetTree(const Tree *tree, uint8_t *probs)
 {
-    while (tree->Value > 0) {
+    while (tree->Value > 0)
+    {
         if (GetBitProbabilityBranch(probs[tree->ProbIdx]))
+        {
             tree += tree->Value;
+        }
         else
+        {
             tree++;
+        }
     }
     return -tree->Value;
 }

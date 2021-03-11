@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <stdint.h>
 
 namespace vp6
@@ -9,13 +10,12 @@ class IDCT
     inline void Put(uint8_t *dest, int blockOffset, int stride, short *input)
     {
         Calculate(dest, blockOffset, stride, input, 1);
+        std::fill_n(input, 64, 0);
     }
 
-    //IDCT
+    // IDCT
     void Calculate(uint8_t *dest, int blockOffset, int stride, short *input, int type);
 
-
-    //TODO: IDCT10
   private:
     inline int M(int a, int b)
     {
