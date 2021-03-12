@@ -296,6 +296,7 @@ void vp6::Frame::ParseCoeffModels()
 
     if (m_useHuffman)
     {
+        throw std::runtime_error("Huffmann not yet supported!");
         for (int pt = 0; pt < 2; pt++)
         {
             uint8_t *dccv = model.CoeffDccv[pt];
@@ -355,7 +356,7 @@ void vp6::Frame::DecodeMacroblock(int row, int column)
 int vp6::Frame::GetVectorPredictors(int row, int col, FrameSelect ref_frame)
 {
     int nb_pred = 0;
-    Motionvector vect[2] = {{0, 0}, {0, 0}};
+    std::array<Motionvector, 2> vect;
     int pos, offset;
     Motionvector mvp;
 
@@ -369,16 +370,28 @@ int vp6::Frame::GetVectorPredictors(int row, int col, FrameSelect ref_frame)
             continue;
         }
         offset = mvp.X + m_ctx->MbWidth * mvp.Y;
+        const auto &mb = m_ctx->Macroblocks[offset];
 
-        if (Tables::ReferenceFrame[static_cast<int>(m_ctx->Macroblocks[offset].Type)] != ref_frame)
+        if (Tables::ReferenceFrame[static_cast<int>(mb.Type)] != ref_frame)
         {
             continue;
         }
+
+        if (mb.Mv == vect[0] || mb.Mv == 0)
+        {
+            continue;
+        }
+
+        vect[nb_pred++] = mb.Mv;
+        if (nb_pred > 1)
+        {
+            nb_pred = -1;
+            break;
+        }
+        m_ctx->VectorCandidatePos = pos;
     }
 
-    m_ctx->VectorCandidate[0] = vect[0];
-    m_ctx->VectorCandidate[1] = vect[1];
-
+    m_ctx->VectorCandidate = vect;
     return 0;
 }
 
@@ -462,8 +475,10 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
     case CodingMode::INTER_MV:
         for (b = 0; b < b_max; ++b)
         {
+            block_coeffs = m_ctx->BlockCoeff[b];
             plane = Tables::B2p[b];
             offset = m_ctx->BlockOffset[b];
+            m_ctx->Idct.Add(Planes[plane], offset, Strides[plane], block_coeffs);
         }
         break;
     default:

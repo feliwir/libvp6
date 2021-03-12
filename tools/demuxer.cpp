@@ -119,6 +119,7 @@ bool vp6::Demuxer::ReadPacket()
         {
             return false;
         }
+        n++;
     }
 
     return true;

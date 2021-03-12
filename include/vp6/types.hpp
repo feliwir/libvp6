@@ -14,6 +14,16 @@ struct Motionvector
     {
     }
 
+    bool operator==(const Motionvector &other) const
+    {
+        return X == other.X && Y == other.Y;
+    }
+
+    bool operator==(const int &other) const
+    {
+        return X == other && Y == other;
+    }
+
     int X;
     int Y;
 };
