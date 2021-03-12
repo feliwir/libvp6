@@ -352,8 +352,33 @@ void vp6::Frame::DecodeMacroblock(int row, int column)
     RenderMacroblock(mode);
 }
 
-int vp6::Frame::GetVectorPredictors(int /*row*/, int /*column*/, FrameSelect /*ref_frame*/)
+int vp6::Frame::GetVectorPredictors(int row, int col, FrameSelect ref_frame)
 {
+    int nb_pred = 0;
+    Motionvector vect[2] = {{0, 0}, {0, 0}};
+    int pos, offset;
+    Motionvector mvp;
+
+    for (pos = 0; pos < 12; pos++)
+    {
+        mvp.X = col + Tables::CandidatePredictorPos[pos][0];
+        mvp.Y = row + Tables::CandidatePredictorPos[pos][0];
+
+        if (mvp.X < 0 || mvp.X >= m_ctx->MbWidth || mvp.Y < 0 || mvp.Y >= m_ctx->MbHeight)
+        {
+            continue;
+        }
+        offset = mvp.X + m_ctx->MbWidth * mvp.Y;
+
+        if (Tables::ReferenceFrame[static_cast<int>(m_ctx->Macroblocks[offset].Type)] != ref_frame)
+        {
+            continue;
+        }
+    }
+
+    m_ctx->VectorCandidate[0] = vect[0];
+    m_ctx->VectorCandidate[1] = vect[1];
+
     return 0;
 }
 
@@ -411,7 +436,8 @@ void vp6::Frame::ParseVectorAdjustment(Motionvector &vect)
 void vp6::Frame::RenderMacroblock(CodingMode mode)
 {
     int ab, b_max, b;
-    int plane;
+    int plane, offset;
+    int16_t *block_coeffs;
     FrameSelect ref_frame = Tables::ReferenceFrame[(int)mode];
 
     m_ctx->AddPredictorsDc(ref_frame, m_dequant_dc);
@@ -427,9 +453,17 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
     case CodingMode::INTRA:
         for (b = 0; b < b_max; ++b)
         {
-            int16_t *block_coeffs = m_ctx->BlockCoeff[b];
+            block_coeffs = m_ctx->BlockCoeff[b];
             plane = Tables::B2p[b];
-            m_ctx->Idct.Put(Planes[plane], m_ctx->BlockOffset[b], Strides[plane], block_coeffs);
+            offset = m_ctx->BlockOffset[b];
+            m_ctx->Idct.Put(Planes[plane], offset, Strides[plane], block_coeffs);
+        }
+        break;
+    case CodingMode::INTER_MV:
+        for (b = 0; b < b_max; ++b)
+        {
+            plane = Tables::B2p[b];
+            offset = m_ctx->BlockOffset[b];
         }
         break;
     default:

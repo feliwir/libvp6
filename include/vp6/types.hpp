@@ -62,7 +62,7 @@ enum class ScalingMode
 
 enum class CodingMode
 {
-    // CODING MODE               PREDICTION FRAME    MOTIONVECTOR
+    // CODING MODE            PREDICTION FRAME    MOTIONVECTOR
     INTER_MV = 0,         //  PREVIOUS            FIXED (0,0)
     INTRA = 1,            //  NONE                NONE
     INTER_PLUS_MV = 2,    //  PREVIOUS            NEWLY CALCULATED
@@ -77,10 +77,6 @@ enum class CodingMode
 
 struct Macroblock
 {
-    static constexpr int8_t CandidatePredictor[12][2]{
-        {0, -1}, {-1, 0}, {-1, -1}, {1, -1}, {0, -2}, {-2, 0}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {-2, -2}, {2, -2},
-    };
-
     CodingMode Type;
     Motionvector Mv;
 };
