@@ -1,5 +1,5 @@
-#include "util.hpp"
-#include <vp6/idct.hpp>
+#include "../util.hpp"
+#include <vp6/dsp/idct.hpp>
 
 void vp6::IDCT::Calculate(uint8_t *dest, int blockOffset, int stride, short *input, int type)
 {

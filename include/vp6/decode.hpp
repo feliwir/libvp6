@@ -2,7 +2,7 @@
 #include "context.hpp"
 #include "frame.hpp"
 #include "huffman.hpp"
-#include "idct.hpp"
+#include "dsp/idct.hpp"
 #include "model.hpp"
 #include "rangedecoder.hpp"
 #include "types.hpp"
