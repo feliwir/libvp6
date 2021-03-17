@@ -4,10 +4,15 @@
 #include <stdint.h>
 #include <vector>
 
+#ifndef _MSC_VER
 union unaligned_32 {
     uint32_t l;
 } __attribute__((packed)) av_alias;
 #define AV_RN(s, p) (((const union unaligned_##s *)(p))->l)
+#else
+#define AV_RN(s, p) (*((const __unaligned uint##s##_t *)(p)))
+#endif
+
 #define AV_RN32(p) AV_RN(32, p)
 #define BYTE_VEC32(c) ((c)*0x01010101UL)
 

@@ -1,9 +1,9 @@
 #include "dequantize.hpp"
 #include "tables.hpp"
 #include <vp6/decode.hpp>
+#include <vp6/dsp/hpel.hpp>
 #include <vp6/frame.hpp>
 #include <vp6/rangedecoder.hpp>
-#include <vp6/dsp/hpel.hpp>
 
 #include <cstring>
 #include <stdexcept>
@@ -479,9 +479,7 @@ void vp6::Frame::RenderMacroblock(CodingMode mode)
             block_coeffs = m_ctx->BlockCoeff[b];
             plane = Tables::B2p[b];
             offset = m_ctx->BlockOffset[b];
-            HPEL::Put<8>(Planes[plane] + offset, 
-                         frame_ref->Planes[plane] + offset, 
-                         Strides[plane]);
+            HPEL::Put<8>(Planes[plane] + offset, frame_ref->Planes[plane] + offset, Strides[plane]);
             m_ctx->Idct.Add(Planes[plane], offset, Strides[plane], block_coeffs);
         }
         break;

@@ -15,8 +15,8 @@ class IDCT
 
     inline void Add(uint8_t *dest, int blockOffset, int stride, short *input)
     {
-      Calculate(dest, blockOffset, stride, input, 2);
-      std::fill_n(input, 64, 0);
+        Calculate(dest, blockOffset, stride, input, 2);
+        std::fill_n(input, 64, 0);
     }
 
     // IDCT

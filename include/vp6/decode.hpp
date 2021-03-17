@@ -1,8 +1,8 @@
 #pragma once
 #include "context.hpp"
+#include "dsp/idct.hpp"
 #include "frame.hpp"
 #include "huffman.hpp"
-#include "dsp/idct.hpp"
 #include "model.hpp"
 #include "rangedecoder.hpp"
 #include "types.hpp"
